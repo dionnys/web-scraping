@@ -1,0 +1,141 @@
+#IMPORTAR LIBRERIAS
+from selenium import webdriver
+import time
+import pandas as pd
+from datetime import date, timedelta
+from selenium.webdriver.common.action_chains import ActionChains
+
+
+#for dias in range(36,60):
+
+#INDICAR LA RUTA DONDE ESTA INSTALADO EL WEBDRIVER
+path = "C:/Chrome Driver/"
+browser = webdriver.Chrome(path+'chromedriver.exe')
+
+
+#1. LOGIN EN LA PAGINA
+browser.get('https://id.neogrid.com/identity/login') 
+time.sleep(2)
+
+#try:
+
+boton_cookies = browser.find_element_by_id('CybotCookiebotDialogBodyLevelButtonAccept')
+
+# ESPERAR HASTA QUE SEA NECESARIO CON UN MAXIMO DE 5 SEGUNDOS
+#WebDriverWait(browser,5).until(cond.element_to_be_clickable(boton_cookies))
+
+usuario = 'bidavila@scj.com'
+password = 'Neogrid@678'
+
+boton_cookies.click()
+
+tx_usuario = browser.find_element_by_id("email").send_keys(usuario)
+tx_password = browser.find_element_by_id('password').send_keys(password)
+boton_ingresar = browser.find_element_by_class_name('button-primary').click()
+
+#except (NoAlertPresentException, TimeoutException) as py_ex:
+#print("Alert not present")
+#print (py_ex)
+#print (py_ex.args)
+#finally:
+#browser.quit()
+
+#2. CERRAR BANNER Y ENTRAR
+time.sleep(2)
+boton_cookies = browser.find_element_by_id('cboxClose').click()
+time.sleep(2)
+boton_ingresar = browser.find_element_by_class_name('button-primary').click()
+
+#3. ACCEDER A RETAIL INSIGHTS
+time.sleep(4)
+boton_retail_insights = browser.find_element_by_class_name('mstrLargeIconViewItemText').click()
+time.sleep(4)
+boton_my_reports = browser.find_elements_by_class_name('mstrmojo-DocImage')[14].click()
+time.sleep(4)
+boton_rita = browser.find_elements_by_class_name('mstrLargeIconViewItemLink')[0].click()
+
+#4. GENERAR DATOS STOCK (4) / VENTAS (6)
+time.sleep(5)
+
+id_reporte = 6
+
+boton_stock = browser.find_elements_by_class_name('mstrLargeIconViewItemLink')[id_reporte].click()
+time.sleep(4)
+boton_run_dashboard1 = browser.find_element_by_id('id_mstr319').click()
+time.sleep(2)
+
+dias =36
+
+fecha = date.today() - timedelta(dias)
+fecha = fecha.strftime("%m/%d/%Y")
+print("SELECCIONAR FECHA: "+str(fecha))
+
+print("SELECCIONAR FECHA DESDE")
+fecha_desde = fecha
+
+selector_fecha_desde = browser.find_element_by_xpath('//*[@id="id_mstr60"]/div[2]/div/div/div[2]/div/a[4]')
+selector_fecha_desde.click()
+
+time.sleep(2)
+input_fecha_desde = browser.find_element_by_xpath('//*[@id="id_mstr74_txt"]')
+input_fecha_desde.clear()
+input_fecha_desde.send_keys(fecha_desde)
+
+boton_fecha_desde = browser.find_element_by_xpath('//*[@id="id_mstr77"]')
+boton_fecha_desde.click()
+
+print("SELECCIONAR FECHA HASTA")
+fecha_hasta = fecha
+
+selector_fecha_hasta = browser.find_element_by_xpath('//*[@id="id_mstr60"]/div[2]/div/div/div[2]/div/a[5]')
+selector_fecha_hasta.click()
+
+time.sleep(2)
+input_fecha_hasta = browser.find_element_by_xpath('//*[@id="id_mstr85_txt"]')
+input_fecha_hasta.clear()
+input_fecha_hasta.send_keys(fecha_hasta)
+
+boton_fecha_hasta = browser.find_element_by_xpath('//*[@id="id_mstr88"]')
+boton_fecha_hasta.click()
+
+print("GENERAR DATOS")
+boton_run_dashboard2 = browser.find_element_by_id('id_mstr63').click()
+
+#5. DESCARGAR DATOS
+print("0 MINUTOS")
+time.sleep(60)
+print("1 MINUTOS")
+time.sleep(60)
+print("2 MINUTOS")
+time.sleep(60)
+print("3 MINUTOS")
+time.sleep(60)
+print("4 MINUTOS")
+time.sleep(60)
+print("5 MINUTOS")
+
+
+print("ABRIR MENU POPUP Y PRESIONAR EXPORTAR")
+
+
+#EJECUTAR HOVER "MOSTRAR MENU" Y LUEGO CLICK "MOSTRAR MENU"
+boton_hover = browser.find_element_by_xpath('//*[@id="mstr139"]/div[1]/div[2]')
+boton_click = browser.find_element_by_xpath('//*[@id="mstr139"]/div[1]/div[2]')
+hover = ActionChains(browser).move_to_element(boton_hover).move_to_element(boton_click)
+hover.click().perform()
+
+time.sleep(2)
+
+#EJECUTAR HOVER "EXPORTAR" Y LUEGO CLICK "EXPORTAR"
+boton_hover = browser.find_element_by_xpath('/html/body/div[4]/div/div[1]/a[11]')
+boton_click = browser.find_element_by_xpath('/html/body/div[4]/div/div[1]/a[11]')
+hover = ActionChains(browser).move_to_element(boton_hover).move_to_element(boton_click)
+hover.click().perform()
+
+time.sleep(2)
+
+#EJECUTAR CLICK "EXCEL" (1) / "PDF" (2) / "CSV" (3)
+boton_exportar = browser.find_element_by_xpath('/html/body/div[5]/div/div[1]/a[1]').click()
+
+
+print("FIN PROCESO")
